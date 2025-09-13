@@ -12,7 +12,7 @@ import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import DoctorRegistration from "./pages/DoctorRegistration";
 import DoctorForm from "./pages/DoctorForm";
-import EmergencyDoctor from "./pages/EmergencyDoctor"; // ✅ IMPORTED
+import EmergencyDoctor from "./pages/EmergencyDoctor";
 import LoadingScreen from "./components/LoadingScreen";
 
 const queryClient = new QueryClient();
