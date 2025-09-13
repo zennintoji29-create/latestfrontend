@@ -8,20 +8,19 @@ import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
+import DoctorRegistration from "./pages/DoctorRegistration"; // ← new page
 import LoadingScreen from "./components/LoadingScreen";
 import { useState, useEffect } from "react";
-
+import DoctorForm from "./pages/DoctorForm";
 const queryClient = new QueryClient();
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate app initialization
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -40,7 +39,13 @@ const App = () => {
             <Route path="/chat" element={<Chat />} />
             <Route path="/login" element={<Login />} />
             <Route path="/about" element={<About />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/doctor" element={<DoctorForm />} />
+            <Route path="/doctor-registration" element={<DoctorRegistration />} />
+  <Route path="/emergency-doctor" element={<EmergencyDoctor />} />
+            <Route path="/doctor-registration" element={<DoctorRegistration />} />
+  <Route path="/emergency-doctor" element={<EmergencyDoctor />} />
+            <Route path="/doctor-registration" element={<DoctorRegistration />} /> {/* New */}
+            {/* Add other pages here */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
