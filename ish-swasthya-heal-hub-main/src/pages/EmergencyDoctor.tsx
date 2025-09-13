@@ -1,84 +1,80 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { toast } from "@/components/ui/toaster";
+import { Button } from "@/components/ui";
+import { toast } from "sonner";
 
-const API_URL = "https://backkkkkkk-aqkn.onrender.com";
+const API_URL = "https://backkkkkkk-aqkn.onrender.com/doctor";
 
-const EmergencyDoctor = () => {
-  const [specialization, setSpecialization] = useState("");
-  const [doctorContact, setDoctorContact] = useState("");
+interface Doctor {
+  id: string;
+  name: string;
+  specialty: string;
+  phone: string;
+}
 
-  const handleLookup = async () => {
-    if (!specialization) {
-      toast({
-        title: "Missing field",
-        description: "Please enter a specialization",
-        variant: "destructive",
-      });
-      return;
-    }
+const specialties = ["General", "Pediatrics", "Cardiology", "Dermatology", "Neurology", "ENT", "Other"];
 
+const EmergencyChat = () => {
+  const [selectedSpecialty, setSelectedSpecialty] = useState("General");
+  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const getDoctor = async () => {
+    setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/emergency-doctor/${specialization}`);
+      const res = await fetch(`${API_URL}/get-doctor?specialty=${selectedSpecialty}`);
       const data = await res.json();
-
-      if (res.ok && data.doctor_contact) {
-        setDoctorContact(data.doctor_contact);
-        toast({
-          title: "Doctor Found ✅",
-          description: `Contact: ${data.doctor_contact}`,
-          variant: "default",
-        });
+      if (res.ok) {
+        setDoctor(data.doctor);
       } else {
-        setDoctorContact("");
-        toast({
-          title: "❌ Not Found",
-          description: "No doctor available for this specialization",
-          variant: "destructive",
-        });
+        toast.error(data.error || "No doctors available for this specialty.");
       }
     } catch (err) {
       console.error(err);
-      toast({
-        title: "❌ Network Error",
-        description: "Unable to connect to the server",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch doctor. Try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/5 to-secondary/5 p-4">
-      <Card className="p-8 max-w-md w-full shadow-xl rounded-2xl bg-white/80 backdrop-blur-md">
-        <h1 className="text-3xl font-bold text-center text-primary mb-6">
-          Emergency Doctor Lookup
-        </h1>
+  const contactDoctor = () => {
+    if (!doctor) return;
+    const phone = doctor.phone.replace(/\D/g, "");
+    const message = encodeURIComponent(`Hello Dr. ${doctor.name}, I need urgent consultation regarding my health.`);
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+  };
 
-        <div className="flex flex-col gap-4">
-          <Input
-            placeholder="Enter Specialization (e.g., Cardiologist)"
-            value={specialization}
-            onChange={(e) => setSpecialization(e.target.value)}
-          />
-          <Button
-            onClick={handleLookup}
-            className="mt-2 w-full bg-gradient-to-r from-primary to-secondary text-white py-3 hover:scale-105 transition-transform"
-          >
-            Find Doctor
+  return (
+    <div className="max-w-md mx-auto p-6 bg-card/70 backdrop-blur-md rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-4">Emergency Health Assistance</h2>
+
+      <div className="mb-4">
+        <label className="block mb-2">Select Specialty:</label>
+        <select
+          className="w-full p-2 border rounded"
+          value={selectedSpecialty}
+          onChange={(e) => setSelectedSpecialty(e.target.value)}
+        >
+          {specialties.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      </div>
+
+      <Button onClick={getDoctor} disabled={loading} className="w-full mb-4">
+        {loading ? "Fetching Doctor..." : "Find Doctor"}
+      </Button>
+
+      {doctor && (
+        <div className="bg-white p-4 rounded shadow text-center">
+          <p className="font-semibold">{doctor.name}</p>
+          <p className="text-sm text-muted-foreground">{doctor.specialty}</p>
+          <Button onClick={contactDoctor} className="mt-2 w-full">
+            Contact via WhatsApp
           </Button>
         </div>
-
-        {doctorContact && (
-          <div className="mt-6 text-center">
-            <p className="text-lg font-semibold">Doctor Contact:</p>
-            <p className="text-xl text-primary font-bold">{doctorContact}</p>
-          </div>
-        )}
-      </Card>
+      )}
     </div>
   );
 };
 
-export default EmergencyDoctor;
+export default EmergencyChat;
