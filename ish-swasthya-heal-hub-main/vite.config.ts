@@ -5,14 +5,27 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: "/", // ensures correct asset paths in production
   server: {
-    host: "::",
+    host: "::", // allows local network access
     port: 8080,
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(), 
+    mode === "development" && componentTagger()
+  ].filter(Boolean),
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(__dirname, "./src"), // allows '@/...' imports
+    },
+  },
+  build: {
+    outDir: "dist",
+    sourcemap: mode === "development", // optional: generate sourcemaps in dev
+    rollupOptions: {
+      output: {
+        manualChunks: undefined, // optional: avoid code splitting issues on Vercel
+      },
     },
   },
 }));
