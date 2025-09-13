@@ -11,7 +11,15 @@ interface Doctor {
   phone: string;
 }
 
-const specialties = ["General", "Pediatrics", "Cardiology", "Dermatology", "Neurology", "ENT", "Other"];
+const specialties = [
+  "General",
+  "Pediatrics",
+  "Cardiology",
+  "Dermatology",
+  "Neurology",
+  "ENT",
+  "Other"
+];
 
 const EmergencyChat = () => {
   const [selectedSpecialty, setSelectedSpecialty] = useState("General");
@@ -39,7 +47,9 @@ const EmergencyChat = () => {
   const contactDoctor = () => {
     if (!doctor) return;
     const phone = doctor.phone.replace(/\D/g, "");
-    const message = encodeURIComponent(`Hello Dr. ${doctor.name}, I need urgent consultation regarding my health.`);
+    const message = encodeURIComponent(
+      `Hello Dr. ${doctor.name}, I need urgent consultation regarding my health.`
+    );
     window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
   };
 
